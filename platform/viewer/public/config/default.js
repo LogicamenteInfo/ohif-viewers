@@ -1,21 +1,45 @@
 window.config = {
-  // default: '/'
   routerBasename: '/',
   extensions: [],
+  whiteLabeling: {
+    createLogoComponentFn: function (React) {
+      return React.createElement('a', {
+        target: '_self',
+        rel: 'noopener noreferrer',
+        className: 'header-brand',
+        href: '/',
+        style: {
+          display: 'block',
+          textIndent: '-9999px',
+          background: 'url(/svg-file-hosted-at-domain-root.svg)',
+          backgroundSize: 'contain',
+          backgroundRepeat: 'no-repeat',
+          width: '200px',
+        },
+      });
+    },
+  },
   showStudyList: true,
   filterQueryParam: false,
   servers: {
     dicomWeb: [
       {
-        name: 'DCM4CHEE',
-        wadoUriRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/wado',
-        qidoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
-        wadoRoot: 'https://server.dcmjs.org/dcm4chee-arc/aets/DCM4CHEE/rs',
+        name: 'ORTHANC',
+        wadoUriRoot: 'https://localhost:8043/wado',
+        qidoRoot: 'http://localhost:8043/dicom-web',
+        wadoRoot: 'http://localhost:8043/dicom-web',
         qidoSupportsIncludeField: true,
         imageRendering: 'wadors',
         thumbnailRendering: 'wadors',
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
+        requestOptions: {
+          auth: "orthanc:orthanc",
+          logRequests: true,
+          logResponses: false,
+          logTiming: true,
+          requestFromBrowser: true,
+        }
       },
     ],
   },
