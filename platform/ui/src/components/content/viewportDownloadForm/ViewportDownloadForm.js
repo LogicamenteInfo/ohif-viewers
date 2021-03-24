@@ -35,6 +35,7 @@ const ViewportDownloadForm = ({
   toggleAnnotations,
   loadImage,
   downloadBlob,
+  storageBlob,
   defaultSize,
   minimumSize,
   maximumSize,
@@ -93,6 +94,10 @@ const ViewportDownloadForm = ({
       viewportElement,
       downloadCanvas.ref.current
     );
+  };
+
+  const storageImage = () => {
+    storageBlob(fileType, viewportElement, downloadCanvas.ref.current);
   };
 
   /**
@@ -200,17 +205,17 @@ const ViewportDownloadForm = ({
       height: validSize(viewportElementHeight),
     }));
   }, [
+    loadImage,
     activeViewport,
     viewportElement,
-    showAnnotations,
-    loadImage,
+    dimensions.width,
+    dimensions.height,
     toggleAnnotations,
+    showAnnotations,
+    validSize,
     updateViewportPreview,
-    fileType,
     downloadCanvas.ref,
-    minimumSize,
-    maximumSize,
-    viewportElementDimensions,
+    fileType,
   ]);
 
   useEffect(() => {
@@ -242,6 +247,7 @@ const ViewportDownloadForm = ({
     downloadCanvas.ref,
     minimumSize,
     maximumSize,
+    loadAndUpdateViewports,
   ]);
 
   useEffect(() => {
@@ -407,6 +413,16 @@ const ViewportDownloadForm = ({
             {t('Buttons:Download')}
           </button>
         </div>
+        <div className="action-storage">
+          <button
+            disabled={hasError}
+            onClick={storageImage}
+            className="btn btn-success"
+            data-cy="download-btn"
+          >
+            Usar no laudo
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -421,6 +437,7 @@ ViewportDownloadForm.propTypes = {
   toggleAnnotations: PropTypes.func.isRequired,
   loadImage: PropTypes.func.isRequired,
   downloadBlob: PropTypes.func.isRequired,
+  storageBlob: PropTypes.func.isRequired,
   /** A default width & height, between the minimum and maximum size */
   defaultSize: PropTypes.number.isRequired,
   minimumSize: PropTypes.number.isRequired,

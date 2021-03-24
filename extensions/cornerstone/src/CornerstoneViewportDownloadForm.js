@@ -8,6 +8,12 @@ import { utils } from '@ohif/core';
 
 import { getEnabledElement } from './state';
 
+import localForage from 'localforage';
+
+localForage.config({
+  name: 'CeddiDICOM'
+});
+
 const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
@@ -101,7 +107,6 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
     const file = `${filename}.${fileType}`;
     const mimetype = `image/${fileType}`;
 
-    /* Handles JPEG images for IE11 */
     if (downloadCanvas.msToBlob && fileType === 'jpeg') {
       const image = downloadCanvas.toDataURL(mimetype, 1);
       const blob = utils.b64toBlob(
@@ -122,6 +127,25 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
     });
   };
 
+  const storageBlob = (fileType, viewportElement, downloadCanvas) => {
+    const mimetype = `image/${fileType}`;
+
+    /* Handles JPEG images for IE11 */
+    if (downloadCanvas.msToBlob && fileType === 'jpeg') {
+      const image = downloadCanvas.toDataURL(mimetype, 1);
+      localForage.setItem('@CeddiDICOM:Image', image);
+    }
+
+    viewportElement.querySelector('canvas').toBlob(blob => {
+      var reader = new FileReader();
+      reader.readAsDataURL(blob);
+      reader.onloadend = function() {
+          var base64data = reader.result;
+        localForage.setItem('@CeddiDICOM:Image', base64data);
+      }
+    });
+  };
+
   return (
     <ViewportDownloadForm
       onClose={onClose}
@@ -136,6 +160,7 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
       loadImage={loadImage}
       toggleAnnotations={toggleAnnotations}
       downloadBlob={downloadBlob}
+      storageBlob={storageBlob}
     />
   );
 };
