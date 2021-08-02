@@ -21,6 +21,7 @@ window.config = {
   },
   showStudyList: true,
   filterQueryParam: false,
+  disableServersCache: false,
   servers: {
     dicomWeb: [
       {
