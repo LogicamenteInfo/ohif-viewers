@@ -26,6 +26,7 @@ const TOOLBAR_BUTTON_TYPES = {
 const TOOLBAR_BUTTON_BEHAVIORS = {
   CINE: 'CINE',
   DOWNLOAD_SCREEN_SHOT: 'DOWNLOAD_SCREEN_SHOT',
+  USAR_LAUDO: 'USAR_LAUDO',
 };
 
 /* TODO: Export enums through a extension manager. */
@@ -236,6 +237,17 @@ const definitions = [
     type: TOOLBAR_BUTTON_TYPES.COMMAND,
     commandName: 'setCornerstoneLayout',
     context: 'ACTIVE_VIEWPORT::VTK',
+  },
+  {
+    id: 'Laudo',
+    label: 'Usar no laudo',
+    icon: 'create-screen-capture',
+    //
+    type: TOOLBAR_BUTTON_TYPES.BUILT_IN,
+    options: {
+      behavior: TOOLBAR_BUTTON_BEHAVIORS.USAR_LAUDO,
+      togglable: true,
+    },
   },
 ];
 

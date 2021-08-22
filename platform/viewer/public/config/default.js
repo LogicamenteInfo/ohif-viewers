@@ -2,7 +2,7 @@ window.config = {
   routerBasename: '/',
   extensions: [],
   whiteLabeling: {
-    createLogoComponentFn: function (React) {
+    createLogoComponentFn: function(React) {
       return React.createElement('a', {
         target: '_self',
         rel: 'noopener noreferrer',
@@ -35,12 +35,12 @@ window.config = {
         enableStudyLazyLoad: true,
         supportsFuzzyMatching: true,
         requestOptions: {
-          auth: "orthanc:orthanc",
+          auth: 'orthanc:orthanc',
           logRequests: true,
           logResponses: false,
           logTiming: true,
           requestFromBrowser: true,
-        }
+        },
       },
     ],
   },

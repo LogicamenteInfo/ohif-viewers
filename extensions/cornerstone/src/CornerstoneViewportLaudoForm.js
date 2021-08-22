@@ -2,6 +2,7 @@ import React from 'react';
 import cornerstone from 'cornerstone-core';
 import cornerstoneTools from 'cornerstone-tools';
 import PropTypes from 'prop-types';
+import { toast } from 'react-toastify';
 
 import { ViewportDownloadForm } from '@ohif/ui';
 import { utils } from '@ohif/core';
@@ -12,7 +13,7 @@ const MINIMUM_SIZE = 100;
 const DEFAULT_SIZE = 512;
 const MAX_TEXTURE_SIZE = 10000;
 
-const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
+const CornerstoneViewportLaudoForm = ({ onClose, activeViewportIndex }) => {
   const activeEnabledElement = getEnabledElement(activeViewportIndex);
 
   const enableViewport = viewportElement => {
@@ -136,6 +137,7 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
       reader.onloadend = function() {
         var base64data = reader.result;
         if (window.parent) window.parent.postMessage(base64data, '*');
+        toast.success('A imagem foi enviada para a plataforma');
       };
     });
   };
@@ -159,9 +161,9 @@ const CornerstoneViewportDownloadForm = ({ onClose, activeViewportIndex }) => {
   );
 };
 
-CornerstoneViewportDownloadForm.propTypes = {
+CornerstoneViewportLaudoForm.propTypes = {
   onClose: PropTypes.func,
   activeViewportIndex: PropTypes.number.isRequired,
 };
 
-export default CornerstoneViewportDownloadForm;
+export default CornerstoneViewportLaudoForm;

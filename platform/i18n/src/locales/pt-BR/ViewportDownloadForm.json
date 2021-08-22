@@ -1,1 +1,14 @@
-{}
+{
+  "emptyFilenameError": "O nome do arquivo não pode ficar vazio.",
+  "fileType": "Tipo de arquivo",
+  "filename": "Nome do arquivo",
+  "formTitle": "Por favor, especifique as dimensões, nome do arquivo e tipo desejado para a saída da imagem.",
+  "imageHeight": "Altura da imagem (px)",
+  "imagePreview": "Pré-visualização da Imagem",
+  "imageWidth": "Largura da imagem (px)",
+  "keepAspectRatio": "Manter relação de aspecto",
+  "loadingPreview": "Carregando pré-visualização da imagem...",
+  "minHeightError": "O valor mínimo de altura é de 100px.",
+  "minWidthError": "O valor mínimo de largura é de 100px.",
+  "showAnnotations": "Mostrar anotações"
+}

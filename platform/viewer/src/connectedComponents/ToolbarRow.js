@@ -413,6 +413,12 @@ function _handleBuiltIn(button) {
       title: t('Download High Quality Image'),
     });
   }
+
+  if (options.behavior === 'USAR_LAUDO') {
+    commandsManager.runCommand('showLaudoViewportModal', {
+      title: 'Usar no laudo',
+    });
+  }
 }
 
 export default withTranslation(['Common', 'ViewportDownloadForm'])(

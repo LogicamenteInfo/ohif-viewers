@@ -97,13 +97,14 @@ function getCompression(imageId) {
     return compressionMethod + compressionRatio + ' : 1';
   }
 
-  return 'Lossless / Uncompressed';
+  return 'Sem perca / Não comprimido';
 }
 
-export { isValidNumber,
+export {
+  isValidNumber,
   formatNumberPrecision,
   formatDICOMDate,
   formatDICOMTime,
   formatPN,
-  getCompression
+  getCompression,
 };

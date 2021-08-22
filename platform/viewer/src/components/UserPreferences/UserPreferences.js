@@ -12,17 +12,17 @@ import './UserPreferences.styl';
 
 const tabs = [
   {
-    name: 'Hotkeys',
+    name: 'Atalhos',
     Component: HotkeysPreferences,
     customProps: {},
   },
   {
-    name: 'General',
+    name: 'Geral',
     Component: GeneralPreferences,
     customProps: {},
   },
   {
-    name: 'Window Level',
+    name: 'Nível de janela',
     Component: WindowLevelPreferences,
     customProps: {},
   },
