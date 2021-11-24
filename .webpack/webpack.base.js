@@ -53,17 +53,20 @@ module.exports = (env, argv, { SRC_DIR, DIST_DIR }) => {
         transpileJavaScriptRule(mode),
         loadWebWorkersRule,
         loadShadersRule,
+        {
+          test: /\.js$/,
+          exclude: /node_modules(?!(\/|\\)pdfjs-dist)/,
+          loader: 'babel-loader',
+          options: {
+            'presets': ['@babel/preset-env'],
+            'plugins': ['@babel/plugin-proposal-optional-chaining']
+          }
+        }
       ],
     },
     resolve: {
       // Which directories to search when resolving modules
-      modules: [
-        // Modules specific to this package
-        path.resolve(__dirname, '../node_modules'),
-        // Hoisted Yarn Workspace Modules
-        path.resolve(__dirname, '../../../node_modules'),
-        SRC_DIR,
-      ],
+      modules: ["node_modules"],
       // Attempt to resolve these extensions in order.
       extensions: ['.js', '.jsx', '.json', '*'],
       // symlinked resources are resolved to their real path, not their symlinked location
