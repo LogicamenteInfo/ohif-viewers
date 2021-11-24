@@ -5,7 +5,7 @@ const TOOLBAR_BUTTON_TYPES = {
 const definitions = [
   {
     id: 'Download Study',
-    label: 'Download Study',
+    label: 'Baixar estudo',
     icon: 'database',
     //
     type: TOOLBAR_BUTTON_TYPES.COMMAND,

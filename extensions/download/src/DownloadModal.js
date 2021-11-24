@@ -4,6 +4,16 @@ import _downloadAndZip from './downloadAndZip';
 import PropTypes from 'prop-types';
 import { saveAs } from 'file-saver';
 
+function label(notification) {
+  switch (notification) {
+    case 'downloading': return 'baixando';
+    case 'zipping': return 'compactando';
+    case 'successfully saved': return 'gerado com sucesso';
+    case 'Error': return 'Erro';
+    default: return notification;
+  }
+}
+
 const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
   const [status, setStatus] = useState({ notificationType: '', text: '' });
   const [size, setSize] = useState('');
@@ -24,7 +34,7 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
       }
     )
       .then(url => {
-        OHIF.log.info('Files successfully compressed:', url);
+        OHIF.log.info('Arquivos comprimidos com sucesso:', url);
         setStatus({
           notificationType: 'saving',
           text: `${StudyInstanceUID}.zip`,
@@ -38,7 +48,7 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
         });
       })
       .catch(error => {
-        OHIF.log.error('Error downloading study...', error.message);
+        OHIF.log.error('Erro ao baixar estudo...', error.message);
         setStatus({
           notificationType: 'Error',
           text: error.message,
@@ -49,16 +59,16 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
   let info;
   switch (status.notificationType) {
     case 'downloading':
-      info = 'Transferred: ' + status.text;
+      info = 'Transferido: ' + status.text;
       break;
     case 'zipping':
-      info = 'DICOM files: ' + status.text;
+      info = 'Arquivos DICOM: ' + status.text;
       break;
     case 'successfully saved':
       info = (
         <span>
-          <p>{'Size: ' + size}</p>
-          <p>{'DICOM images: ' + numberOfFiles}</p>
+          <p>{'Tamanho: ' + size}</p>
+          <p>{'Imagens DICOM: ' + numberOfFiles}</p>
           <p>
             <button type="button" className="btn btn-primary" onClick={onClose}>
               Ok
@@ -84,7 +94,7 @@ const DownloadModal = ({ dicomWebClient, StudyInstanceUID, onClose }) => {
   }
   return (
     <div className="download-study-modal-container">
-      <p>Status: {status.notificationType}</p>
+      <p>Status: {label(status.notificationType)}</p>
       <p>{info}</p>
     </div>
   );

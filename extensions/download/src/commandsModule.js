@@ -32,7 +32,7 @@ export function getCommands(context, servicesManager, extensionManager) {
 
       UIModalService.show({
         content: WrappedDownloadModal,
-        title: `Download Study`,
+        title: `Baixar estudo`,
         fullscreen: false,
         noScroll: true,
         shouldCloseOnEsc: false,
@@ -62,8 +62,8 @@ export function getCommands(context, servicesManager, extensionManager) {
  */
 
 function error(e) {
-  if (e.message === 'Queue limit reached') {
-    OHIF.log.warn('A download is already in progress, please wait.');
+  if (e.message === 'Limite da fila alcançado') {
+    OHIF.log.warn('Um download já está em progresso, aguarde por favor.');
   } else {
     OHIF.log.error(e);
   }

@@ -49,11 +49,11 @@ async function downloadAndZip(dicomWebClient, studyInstanceUID, status) {
     }
     let buffers = await dicomWebClient.retrieveStudy({
       studyInstanceUID,
-      progressCallback: function(pe) {
+      progressCallback: function (pe) {
         if (pe.lengthComputable) {
           status(
             'downloading',
-            formatBytes(pe.loaded) + ' of ' + formatBytes(pe.total)
+            formatBytes(pe.loaded) + ' de ' + formatBytes(pe.total)
           );
         } else {
           status('downloading', formatBytes(pe.loaded));
