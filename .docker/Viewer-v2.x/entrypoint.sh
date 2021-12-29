@@ -1,39 +1,41 @@
-#!/bin/bash
+#!/bin/sh
+# vim:sw=4:ts=4:et
+sed -i "s/\${DOMAIN}/${DOMAIN}/g" /etc/supervisor.d/default.ini
+sed -i "s/\${SUBDOMAIN}/${SUBDOMAIN}/g" /etc/supervisor.d/default.ini
+/usr/bin/supervisord -c /etc/supervisor.d/default.ini &
 
-if [ -n "$CLIENT_ID" ] || [ -n "$HEALTHCARE_API_ENDPOINT" ]
-  then
-    # If CLIENT_ID is specified, use the google.js configuration with the modified ID
-    if [ -n "$CLIENT_ID" ]
-      then
-  	    echo "Google Cloud Healthcare \$CLIENT_ID has been provided: "
-  	    echo "$CLIENT_ID"
-  	    echo "Updating config..."
+set -e
 
-  	    # - Use SED to replace the CLIENT_ID that is currently in google.js
-	      sed -i -e "s/YOURCLIENTID.apps.googleusercontent.com/$CLIENT_ID/g" /usr/share/nginx/html/google.js
-	  fi
+if [ -z "${NGINX_ENTRYPOINT_QUIET_LOGS:-}" ]; then
+    exec 3>&1
+else
+    exec 3>/dev/null
+fi
 
-    # If HEALTHCARE_API_ENDPOINT is specified, use the google.js configuration with the modified endpoint
-    if [ -n "$HEALTHCARE_API_ENDPOINT" ]
-      then
-        echo "Google Cloud Healthcare \$HEALTHCARE_API_ENDPOINT has been provided: "
-        echo "$HEALTHCARE_API_ENDPOINT"
-        echo "Updating config..."
+if [ "$1" = "nginx" -o "$1" = "nginx-debug" ]; then
+    if /usr/bin/find "/docker-entrypoint.d/" -mindepth 1 -maxdepth 1 -type f -print -quit 2>/dev/null | read v; then
+        echo >&3 "$0: /docker-entrypoint.d/ is not empty, will attempt to perform configuration"
 
-        # - Use SED to replace the HEALTHCARE_API_ENDPOINT that is currently in google.js
-        sed -i -e "s+https://healthcare.googleapis.com/v1beta1+$HEALTHCARE_API_ENDPOINT+g" /usr/share/nginx/html/google.js
+        echo >&3 "$0: Looking for shell scripts in /docker-entrypoint.d/"
+        find "/docker-entrypoint.d/" -follow -type f -print | sort -V | while read -r f; do
+            case "$f" in
+                *.sh)
+                    if [ -x "$f" ]; then
+                        echo >&3 "$0: Launching $f";
+                        "$f"
+                    else
+                        # warn on shell scripts without exec bit
+                        echo >&3 "$0: Ignoring $f, not executable";
+                    fi
+                    ;;
+                *) echo >&3 "$0: Ignoring $f";;
+            esac
+        done
+
+        echo >&3 "$0: Configuration complete; ready for start up"
+    else
+        echo >&3 "$0: No files found in /docker-entrypoint.d/, skipping configuration"
     fi
-
-	  # - Copy google.js to overwrite app-config.js
-	  cp /usr/share/nginx/html/google.js /usr/share/nginx/html/app-config.js
 fi
-
-if [ -n "${PORT}" ]
-  then
-    echo "Changing port to ${PORT}..."
-    sed -i -e "s/listen 80/listen ${PORT}/g" /etc/nginx/conf.d/default.conf
-fi
-
-echo "Starting Nginx to serve the OHIF Viewer..."
 
 exec "$@"

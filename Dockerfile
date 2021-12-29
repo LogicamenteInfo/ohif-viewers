@@ -1,66 +1,34 @@
-# This dockerfile is used to publish the `ohif/viewer` image on dockerhub.
-#
-# It's a good example of how to build our static application and package it
-# with a web server capable of hosting it as static content.
-#
-# docker build
-# --------------
-# If you would like to use this dockerfile to build and tag an image, make sure
-# you set the context to the project's root directory:
-# https://docs.docker.com/engine/reference/commandline/build/
-#
-#
-# SUMMARY
-# --------------
-# This dockerfile has two stages:
-#
-# 1. Building the React application for production
-# 2. Setting up our Nginx (Alpine Linux) image w/ step one's output
-#
+FROM nginx:stable-alpine
 
+WORKDIR /analytics
 
-# Stage 1: Build the application
-# docker build -t ohif/viewer:latest .
-FROM node:15.13.0-slim as builder
+RUN apk add --no-cache wget curl supervisor nodejs npm
 
-RUN mkdir /usr/src/app
-WORKDIR /usr/src/app
+RUN npm -g install javascript-obfuscator
 
-# Copy Files
-COPY .docker /usr/src/app/.docker
-COPY .webpack /usr/src/app/.webpack
-COPY extensions /usr/src/app/extensions
-COPY platform /usr/src/app/platform
-COPY .browserslistrc /usr/src/app/.browserslistrc
-COPY aliases.config.js /usr/src/app/aliases.config.js
-COPY babel.config.js /usr/src/app/babel.config.js
-COPY lerna.json /usr/src/app/lerna.json
-COPY package.json /usr/src/app/package.json
-COPY postcss.config.js /usr/src/app/postcss.config.js
-COPY yarn.lock /usr/src/app/yarn.lock
+RUN wget https://github.com/prometheus/node_exporter/releases/download/v1.3.1/node_exporter-1.3.1.linux-amd64.tar.gz
+RUN tar xvfz node_exporter-*.*-amd64.tar.gz
 
-RUN apt-get update && apt-get install -y python make g++
-# Run the install before copying the rest of the files
-RUN yarn config set workspaces-experimental true
-RUN yarn install
+RUN wget https://github.com/nginxinc/nginx-prometheus-exporter/releases/download/v0.10.0/nginx-prometheus-exporter_0.10.0_linux_amd64.tar.gz
+RUN tar xvfz nginx-prometheus-exporter*.*amd64.tar.gz
 
-ENV PATH /usr/src/app/node_modules/.bin:$PATH
-ENV QUICK_BUILD true
-# ENV GENERATE_SOURCEMAP=false
-# ENV REACT_APP_CONFIG=config/default.js
+RUN wget https://github.com/prometheus/prometheus/releases/download/v2.32.1/prometheus-2.32.1.linux-amd64.tar.gz
+RUN tar xvfz prometheus-*-amd64.tar.gz
 
-RUN yarn run build
+COPY .docker/Viewer-v2.x/entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
-# Stage 2: Bundle the built application into a Docker container
-# which runs Nginx using Alpine Linux
-FROM nginx:1.21.1-alpine
-RUN apk add --no-cache bash
-RUN rm -rf /etc/nginx/conf.d
-COPY .docker/Viewer-v2.x /etc/nginx/conf.d
-COPY .docker/Viewer-v2.x/entrypoint.sh /usr/src/
-RUN chmod 777 /usr/src/entrypoint.sh
-COPY --from=builder /usr/src/app/platform/viewer/dist /usr/share/nginx/html
+COPY .docker/Viewer-v2.x/update-config.sh /docker-entrypoint.d/
+RUN chmod +x /docker-entrypoint.d/update-config.sh
+
+ADD ./.docker/Viewer-v2.x/default.conf /etc/nginx/conf.d/default.conf
+ADD ./.docker/Viewer-v2.x/supervisord.conf /etc/supervisor.d/default.ini
+ADD ./.docker/Viewer-v2.x/prometheus.yml /analytics/prometheus.yml
+ADD ./.docker/Viewer-v2.x/prometheus.web.yml /analytics/web.yml
+
+COPY ./platform/viewer/dist /usr/share/nginx/html
+ADD ./.docker/Viewer-v2.x/app-config.js /usr/share/nginx/html/app-config.js.sample
+
 EXPOSE 80
 EXPOSE 443
-ENTRYPOINT ["/usr/src/entrypoint.sh"]
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 9090
